@@ -1,0 +1,22 @@
+version: '2'
+
+volumes:
+  jenkins_home:
+    external: true
+
+services:
+  jenkins:
+    build:
+      context: .
+      args:
+        DOCKER_GID: ${DOCKER_GID}
+        DOCKER_ENGINE: ${DOCKER_ENGINE}
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+  wheel:
+    image: dockerproductionaws/wheel
+    volumes:
+      - ./packages:/packages
