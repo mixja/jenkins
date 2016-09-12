@@ -15,7 +15,7 @@ ARG DOCKER_ENGINE
 
 # Install system requirements
 RUN echo "http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
-    apk add --no-cache --update py-pip docker
+    apk add --no-cache --update py-pip docker make
 
 # Install Docker Compose and Ansible
 COPY packages /packages
