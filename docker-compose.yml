@@ -40,5 +40,7 @@ services:
       - ${JENKINS_USERNAME}
       - -password
       - ${JENKINS_PASSWORD}
+      - -executors
+      - "1"
       - -labels
       - DOCKER
