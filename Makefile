@@ -9,6 +9,7 @@ export DOCKER_GID ?= 100
 export JENKINS_USERNAME ?= admin
 export JENKINS_PASSWORD ?= password
 export JENKINS_SLAVE_VERSION ?= 2.2
+export JENKINS_SLAVE_LABELS ?= DOCKER
 
 init:
 	${INFO} "Creating volumes..."

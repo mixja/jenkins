@@ -43,4 +43,4 @@ services:
       - -executors
       - "1"
       - -labels
-      - DOCKER
+      - ${JENKINS_SLAVE_LABELS}
