@@ -5,18 +5,40 @@ volumes:
     external: true
 
 services:
+  wheel:
+    image: dpaws/wheel
+    volumes:
+      - ./packages:/packages
+
   jenkins:
     build:
       context: .
       args:
         DOCKER_GID: ${DOCKER_GID}
-        DOCKER_ENGINE: ${DOCKER_ENGINE}
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "8080:8080"
-  wheel:
-    image: dockerproductionaws/wheel
+      - "8080"
+
+  jenkins-slave:
+    build:
+      context: .
+      dockerfile: Dockerfile.slave
+      args:
+        DOCKER_GID: ${DOCKER_GID}
+        JENKINS_SLAVE_VERSION: ${JENKINS_SLAVE_VERSION}
     volumes:
-      - ./packages:/packages
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - java
+      - -jar
+      - slave.jar
+      - -master
+      - http://jenkins:8080/
+      - -username
+      - ${JENKINS_USERNAME}
+      - -password
+      - ${JENKINS_PASSWORD}
+      - -labels
+      - DOCKER

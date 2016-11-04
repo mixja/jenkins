@@ -3,27 +3,33 @@ include Makefile.settings
 .PHONY: init build run clean publish logs
 
 DOCKER_REGISTRY ?= docker.io
-ORG_NAME ?= dockerproductionaws
+ORG_NAME ?= dpaws
 REPO_NAME ?= jenkins
-export DOCKER_ENGINE ?= 1.12.1
 export DOCKER_GID ?= 100
+export JENKINS_USERNAME ?= admin
+export JENKINS_PASSWORD ?= password
+export JENKINS_SLAVE_VERSION ?= 2.2
 
 init:
 	${INFO} "Creating volumes..."
 	@ docker volume create --name=jenkins_home
 
-build: init
+wheel:
 	${INFO} "Creating wheels..."
 	@ docker-compose up wheel
-	@ docker-compose down -v || true
+	@ docker-compose rm -v -f wheel
+	${INFO} "Wheels created"
+
+build:
 	${INFO} "Building image..."
 	@ docker-compose build --pull
 	${INFO} "Build complete"
 
-run: init
+jenkins: init
 	${INFO} "Starting services..."
 	@ docker-compose up -d jenkins
-	${INFO} "Services running"
+	${INFO} "Jenkins is running at http://$(DOCKER_HOST_IP):$(call get_port_mapping,jenkins,8080)..."
+	${INFO} "Run make logs to get the one-time admin password if running for the first time"
 
 publish: run
 	${INFO} "Publishing image..."
@@ -31,10 +37,20 @@ publish: run
 	@ docker push $(DOCKER_REGISTRY)/$(ORG_NAME)/$(REPO_NAME)
 	${INFO} "Publish complete"
 
+slave: jenkins
+	${INFO} "Running $(SLAVE_COUNT) slave(s)..."
+	@ docker-compose scale jenkins-slave=$(SLAVE_COUNT)
+	${INFO} "$(SLAVE_COUNT) slave(s) running"
+
 clean:
 	${INFO} "Stopping services..."
 	@ docker-compose down -v || true
 	${INFO} "Services stopped"
 
 logs:
+	${INFO} "Streaming Jenkins logs - press CTRL+C to exit..."
 	@ docker-compose logs -f jenkins
+
+# IMPORTANT - ensures arguments are not interpreted as make targets
+%:
+	@:

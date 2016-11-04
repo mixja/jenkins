@@ -1,0 +1,55 @@
+# Installing from Alpine Edge to fix xargs issue https://bugs.alpinelinux.org/issues/6374
+FROM alpine:edge
+# A few problems with compiling Java from source:
+#  1. Oracle.  Licensing prevents us from redistributing the official JDK.
+#  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
+#       really hairy.
+
+# Default to UTF-8 file.encoding
+ENV LANG C.UTF-8
+
+# add a simple script that can auto-detect the appropriate JAVA_HOME value
+# based on whether the JDK or only the JRE is installed
+RUN { \
+    echo '#!/bin/sh'; \
+    echo 'set -e'; \
+    echo; \
+    echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
+  } > /usr/local/bin/docker-java-home \
+  && chmod +x /usr/local/bin/docker-java-home
+ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk/jre
+ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
+
+ENV JAVA_VERSION 8u101
+ENV JAVA_ALPINE_VERSION 8.101.13-r1
+
+RUN set -x \
+  && apk add --no-cache \
+    openjdk8-jre="$JAVA_ALPINE_VERSION" \
+  && [ "$JAVA_HOME" = "$(docker-java-home)" ]
+
+MAINTAINER Justin Menga <justin.menga@gmail.com>
+
+RUN addgroup -g 1000 jenkins && \
+    adduser -u 1000 -G jenkins -D -h /var/jenkins jenkins && \
+    apk add --no-cache --update bash
+
+# Used to set the docker group ID
+ARG DOCKER_GID
+COPY set_gid.sh /
+RUN /set_gid.sh
+
+# Install system requirements
+RUN echo "http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
+    apk add --no-cache --update py2-pip docker make curl git
+
+# Install Docker Compose and Ansible
+COPY packages /packages
+RUN pip install --no-index --no-cache-dir -f /packages -r /packages/requirements.txt && \
+    rm -rf /packages
+
+# Install Jenkins Swarm Client
+ARG JENKINS_SLAVE_VERSION
+USER jenkins
+RUN curl --create-dirs -sSLo /var/jenkins/slave.jar https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${JENKINS_SLAVE_VERSION:-2.2}/swarm-client-${JENKINS_SLAVE_VERSION:-2.2}-jar-with-dependencies.jar
+WORKDIR /var/jenkins
