@@ -10,7 +10,7 @@ To define Python packages that should be installed, edit the file `packages/requ
 
 To build the Python packages run `make wheel`.  
 
-This will use the [docker-production-aws/wheel](http://github.com/docker-production-aws/wheel) image to first compile all packages and their dependencies and output wheels to the `packages` folder.
+This will use the [dpaws/wheel](http://github.com/dpaws/wheel) image to first compile all packages and their dependencies and output wheels to the `packages` folder.
 
 ## Running Jenkins
 
