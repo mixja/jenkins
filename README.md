@@ -134,6 +134,7 @@ Removing network jenkins_default
 Volume jenkins_home is external, skipping
 => Services stopped
 $ docker volume rm jenkins_home
+```
 
 ## Docker Group ID
 
