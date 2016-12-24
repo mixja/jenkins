@@ -22,4 +22,4 @@ RUN pip install --no-index --no-cache-dir -f /packages -r /packages/requirements
 USER jenkins
 
 # Add Jenkins plugins
-RUN /usr/local/bin/install-plugins.sh github dockerhub-notification workflow-aggregator zentimestamp swarm
+RUN /usr/local/bin/install-plugins.sh github dockerhub-notification workflow-aggregator zentimestamp swarm blueocean
