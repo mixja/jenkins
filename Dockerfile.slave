@@ -11,9 +11,9 @@ COPY src/build/ /build/
 
 # Install system requirements
 RUN /build/set_gid.sh && \
-	echo "@community http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
-	apk add --no-cache --virtual build-dependencies python-dev openssl-dev libffi-dev musl-dev git gcc && \
-    apk add --no-cache --update py2-pip docker@community make curl git && \
+  	echo "@community http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
+  	apk add --no-cache --virtual build-dependencies python-dev openssl-dev libffi-dev musl-dev git gcc && \
+    apk add --no-cache --update py2-pip docker@community make curl git jq && \
     pip install --no-cache-dir -r /build/requirements.txt && \
     apk del build-dependencies && \
     rm -rf /build
@@ -23,3 +23,7 @@ ARG JENKINS_SLAVE_VERSION
 USER jenkins
 RUN curl --create-dirs -sSLo /var/jenkins/slave.jar https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/${JENKINS_SLAVE_VERSION:-2.2}/swarm-client-${JENKINS_SLAVE_VERSION:-2.2}-jar-with-dependencies.jar
 WORKDIR /var/jenkins
+
+# Entrypoint
+COPY src/entrypoint_slave.sh /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

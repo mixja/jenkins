@@ -1,4 +1,0 @@
-ansible
-boto
-boto3
-docker-compose

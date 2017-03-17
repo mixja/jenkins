@@ -12,7 +12,7 @@ COPY src/build/ /build/
 RUN /build/set_gid.sh && \
   	echo "@community http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
   	apk add --no-cache --virtual build-dependencies python-dev openssl-dev libffi-dev musl-dev git gcc && \
-    apk add --no-cache --update py-pip make docker@community && \
+    apk add --no-cache --update py-pip make docker@community jq && \
     pip install --no-cache-dir -r /build/requirements.txt && \
     apk del build-dependencies && \
     rm -rf /build

@@ -1,7 +1,8 @@
 YELLOW := "\e[1;33m"
 NC := "\e[0m"
 INFO := @bash -c 'printf $(YELLOW); echo "=> $$1"; printf $(NC)' MESSAGE
-
+ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+RANDOM := $(shell date | md5sum 2>/dev/null || date | md5)
 # Slave arguments
 ifeq ($(firstword $(MAKECMDGOALS)),$(filter $(firstword $(MAKECMDGOALS)),slave))
   SLAVE_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -16,3 +17,15 @@ DOCKER_HOST_IP := $(if $(DOCKER_HOST_IP),$(DOCKER_HOST_IP),\<docker-host\>)
 # Syntax: $(call get_port_mapping,<service-name>,<internal-port>)
 get_raw_port_mapping = $$(docker-compose ps -q $(1) | xargs -I ID docker port ID $(2))
 get_port_mapping = $$(echo $$(IFS=':' read -r -a array <<< "$(call get_raw_port_mapping,$(1),$(2))" && echo "$${array[1]}"))
+
+# AWS assume role settings
+# Attempts to assume IAM role using STS
+# Syntax: $(call assume_role,<role-arn>)
+get_assume_session = aws sts assume-role --role-arn=$(1) --role-session-name=admin
+get_assume_credential = jq --null-input '$(1)' | jq .Credentials.$(2) -r
+define assume_role
+	$(eval AWS_SESSION = $(shell $(call get_assume_session,$(1))))
+	$(eval export AWS_ACCESS_KEY_ID = $(shell $(call get_assume_credential,$(AWS_SESSION),AccessKeyId)))
+	$(eval export AWS_SECRET_ACCESS_KEY = $(shell $(call get_assume_credential,$(AWS_SESSION),SecretAccessKey)))
+	$(eval export AWS_SESSION_TOKEN = $(shell $(call get_assume_credential,$(AWS_SESSION),SessionToken)))
+endef

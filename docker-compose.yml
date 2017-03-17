@@ -10,12 +10,17 @@ services:
       context: .
       args:
         DOCKER_GID: ${DOCKER_GID}
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
+      JENKINS_USERNAME: ${JENKINS_USERNAME}
+      KMS_JENKINS_PASSWORD: ${KMS_JENKINS_PASSWORD}
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8080"
-
   jenkins-slave:
     build:
       context: .
@@ -23,19 +28,12 @@ services:
       args:
         DOCKER_GID: ${DOCKER_GID}
         JENKINS_SLAVE_VERSION: ${JENKINS_SLAVE_VERSION}
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
+      JENKINS_USERNAME: ${JENKINS_USERNAME}
+      JENKINS_SLAVE_LABELS: ${JENKINS_SLAVE_LABELS}
+      KMS_JENKINS_PASSWORD: ${KMS_JENKINS_PASSWORD}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command:
-      - java
-      - -jar
-      - slave.jar
-      - -master
-      - http://jenkins:8080/
-      - -username
-      - ${JENKINS_USERNAME}
-      - -password
-      - ${JENKINS_PASSWORD}
-      - -executors
-      - "1"
-      - -labels
-      - ${JENKINS_SLAVE_LABELS}
