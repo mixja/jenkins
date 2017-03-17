@@ -1,4 +1,4 @@
-FROM jenkins:2.7.4-alpine
+FROM jenkins:alpine
 MAINTAINER Justin Menga <justin.menga@gmail.com>
 
 # Change to root user
@@ -6,17 +6,16 @@ USER root
 
 # Used to set the docker group ID
 ARG DOCKER_GID
-COPY set_gid.sh /
-RUN /set_gid.sh
+COPY src /build/
 
 # Install system requirements
-RUN echo "http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
-    apk add --no-cache --update py-pip docker make
-
-# Install Docker Compose and Ansible
-COPY packages /packages
-RUN pip install --no-index --no-cache-dir -f /packages -r /packages/requirements.txt && \
-    rm -rf /packages
+RUN /build/set_gid.sh && \
+	echo "@community http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
+	apk add --no-cache --virtual build-dependencies python-dev openssl-dev libffi-dev musl-dev git gcc && \
+    apk add --no-cache --update py-pip make docker@community && \
+    pip install --no-cache-dir -r /build/requirements.txt && \
+    apk del build-dependencies && \
+    rm -rf /build
 
 # Change to jenkins user
 USER jenkins

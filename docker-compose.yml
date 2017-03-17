@@ -5,11 +5,6 @@ volumes:
     external: true
 
 services:
-  wheel:
-    image: dpaws/wheel
-    volumes:
-      - ./packages:/packages
-
   jenkins:
     build:
       context: .
