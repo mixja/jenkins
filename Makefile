@@ -30,9 +30,8 @@ jenkins: init
 	${INFO} "Starting services..."
 	@ docker-compose up -d jenkins
 	${INFO} "Jenkins is running at http://$(DOCKER_HOST_IP):$(call get_port_mapping,jenkins,8080)..."
-	${INFO} "Run make logs to get the one-time admin password if running for the first time"
 
-publish: run
+publish:
 	${INFO} "Publishing image..."
 	@ docker tag $$(docker inspect -f '{{ .Image }}' $$(docker-compose ps -q jenkins)) $(DOCKER_REGISTRY)/$(ORG_NAME)/$(REPO_NAME)
 	@ docker push $(DOCKER_REGISTRY)/$(ORG_NAME)/$(REPO_NAME)

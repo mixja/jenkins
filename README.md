@@ -14,11 +14,7 @@ This will use the [dpaws/wheel](http://github.com/dpaws/wheel) image to first co
 
 ## Running Jenkins
 
-First, ensure you have run `make wheel` at least once before continuing.  
-
-> You don't need to run `make wheel` everytime you run Jenkins, only if you need to update the Jenkins Python binary packages
-
-Next, execute `make jenkins`, which will start Jenkins.
+The fastest way to get started is to run `make jenkins`, which will automatically build and start Jenkins.
 
 An external Docker volume called `jenkins_home` will be automatically created.
 
@@ -31,49 +27,15 @@ jenkins_home
 => Starting services...
 Creating jenkins_jenkins_1
 => Jenkins is running at http://172.16.154.128:32876...
-=> Run make logs to get the one-time admin password if running for the first time
 ```
-
-On first run or if the `jenkins_home` volume is empty, Jenkins will create an admin user with an initial password.  
-
-This password is displayed on stdout, which you can view by running `make logs`.  
-
-> Note that Jenkins can take 1-2 minutes to display the password
-
-```
-$ make logs
-...
-...
-jenkins_1  | Sep 09, 2016 8:46:08 PM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
-jenkins_1  | INFO: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@613921fd: defining beans [filter,legacy]; root of factory hierarchy
-jenkins_1  | Sep 09, 2016 8:46:08 PM jenkins.install.SetupWizard init
-jenkins_1  | INFO:
-jenkins_1  |
-jenkins_1  | *************************************************************
-jenkins_1  | *************************************************************
-jenkins_1  | *************************************************************
-jenkins_1  |
-jenkins_1  | Jenkins initial setup is required. An admin user has been created and a password generated.
-jenkins_1  | Please use the following password to proceed to installation:
-jenkins_1  |
-jenkins_1  | ddf5f802d6af489789c63871eab9694e
-jenkins_1  |
-jenkins_1  | This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
-jenkins_1  |
-jenkins_1  | *************************************************************
-jenkins_1  | *************************************************************
-jenkins_1  | *************************************************************
-...
-...
-```
-
-After obtaining the initial password, browse to URL output from `make jenkins` and enter the password at the Unlock Jenkins screen.
 
 > `make jenkins` creates a dynamic port mapping on the Docker Host so if you kill and remove the jenkins container, it will likely start on a new dynamic port mapping as displayed on the `make jenkins` output
 
+If you need to make any changes to the Jenkins images, ensure you run `make build` to rebuild the images.
+
 ## Running Jenkins Slaves
 
-Once you have setup your initial username and password for Jenkins, you can run one or more Jenkins slaves.
+Once Jenkins is running, you can run one or more Jenkins slaves.
 
 By default, the Makefile assumes you are using a username of `admin` and password of `password`:
 
