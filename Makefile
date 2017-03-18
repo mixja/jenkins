@@ -39,6 +39,7 @@ jenkins: init
 	@ $(if $(AWS_ROLE),$(call assume_role,$(AWS_ROLE)),)
 	${INFO} "Starting services..."
 	@ docker-compose up -d jenkins
+	@ $(call check_service_health,$(RELEASE_ARGS),jenkins)
 	${INFO} "Jenkins is running at http://$(DOCKER_HOST_IP):$(call get_port_mapping,jenkins,8080)..."
 
 publish:
@@ -47,7 +48,7 @@ publish:
 	@ docker push $(DOCKER_REGISTRY)/$(ORG_NAME)/$(REPO_NAME)
 	${INFO} "Publish complete"
 
-slave:
+slave: jenkins
 	@ $(if $(AWS_ROLE),$(call assume_role,$(AWS_ROLE)),)
 	${INFO} "Running $(SLAVE_COUNT) slave(s)..."
 	@ docker-compose scale jenkins-slave=$(SLAVE_COUNT)

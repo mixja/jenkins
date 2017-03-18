@@ -1,4 +1,4 @@
-version: '2'
+version: '2.1'
 
 volumes:
   jenkins_home:
@@ -16,6 +16,10 @@ services:
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
       JENKINS_USERNAME: ${JENKINS_USERNAME}
       KMS_JENKINS_PASSWORD: ${KMS_JENKINS_PASSWORD}
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:8080/login"]
+      interval: 5s
+      retries: 60
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
