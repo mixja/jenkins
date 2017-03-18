@@ -6,13 +6,11 @@ LABEL application=jenkins
 USER root
 
 # Used to set the docker group ID
-ARG DOCKER_GID
 ARG TIMEZONE=America/Los_Angeles
 COPY src/build/ /build/
 
 # Install system requirements
-RUN /build/set_gid.sh && \
-  	echo "@community http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
+RUN echo "@community http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
   	apk add --no-cache --virtual build-dependencies python-dev openssl-dev libffi-dev musl-dev git gcc tzdata && \
     apk add --no-cache --update py-pip make docker@community jq && \
     cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
@@ -31,6 +29,10 @@ RUN /usr/local/bin/install-plugins.sh github dockerhub-notification workflow-agg
 COPY src/jenkins/ /usr/share/jenkins/ref/
 
 # Entrypoint
+ENV DOCKER_GID=100
 COPY src/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/bin/tini","--","/usr/local/bin/jenkins.sh"]
+
+# Change to root so that we can set Docker GID on container startup
+USER root

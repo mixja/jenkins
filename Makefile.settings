@@ -2,7 +2,7 @@ YELLOW := "\e[1;33m"
 NC := "\e[0m"
 INFO := @bash -c 'printf $(YELLOW); echo "=> $$1"; printf $(NC)' MESSAGE
 ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-RANDOM := $(shell date | md5sum 2>/dev/null || date | md5)
+
 # Slave arguments
 ifeq ($(firstword $(MAKECMDGOALS)),$(filter $(firstword $(MAKECMDGOALS)),slave))
   SLAVE_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))

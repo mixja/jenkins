@@ -8,12 +8,11 @@ services:
   jenkins:
     build:
       context: .
-      args:
-        DOCKER_GID: ${DOCKER_GID}
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
+      DOCKER_GID: ${DOCKER_GID}
       JENKINS_USERNAME: ${JENKINS_USERNAME}
       KMS_JENKINS_PASSWORD: ${KMS_JENKINS_PASSWORD}
     healthcheck:
@@ -30,12 +29,12 @@ services:
       context: .
       dockerfile: Dockerfile.slave
       args:
-        DOCKER_GID: ${DOCKER_GID}
         JENKINS_SLAVE_VERSION: ${JENKINS_SLAVE_VERSION}
     environment:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
+      DOCKER_GID: ${DOCKER_GID}
       JENKINS_URL: http://jenkins:8080/
       JENKINS_USERNAME: ${JENKINS_USERNAME}
       JENKINS_SLAVE_LABELS: ${JENKINS_SLAVE_LABELS}

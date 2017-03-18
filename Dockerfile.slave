@@ -3,17 +3,14 @@ MAINTAINER Justin Menga <justin.menga@gmail.com>
 LABEL application=jenkins
 
 RUN addgroup -g 1000 jenkins && \
-    adduser -u 1000 -G jenkins -D -h /var/jenkins jenkins && \
+    adduser -u 1000 -G jenkins -D -h /var/jenkins -s /bin/bash jenkins && \
     apk add --no-cache --update bash
 
-# Used to set the docker group ID
-ARG DOCKER_GID
 ARG TIMEZONE=America/Los_Angeles
 COPY src/build/ /build/
 
 # Install system requirements
-RUN /build/set_gid.sh && \
-  	echo "@community http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
+RUN echo "@community http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
   	apk add --no-cache --virtual build-dependencies python-dev openssl-dev libffi-dev musl-dev git gcc tzdata && \
     apk add --no-cache --update py2-pip docker@community make curl git jq && \
     cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
@@ -29,7 +26,11 @@ RUN curl --create-dirs -fsSLo /var/jenkins/slave.jar https://repo.jenkins-ci.org
 WORKDIR /var/jenkins
 
 # Entrypoint
+ENV DOCKER_GID=100
 COPY src/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY src/slave.sh /usr/local/bin/slave.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["sh","/usr/local/bin/slave.sh"]
+
+# Change to root so that we can set Docker GID on container startup
+USER root

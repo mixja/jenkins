@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 
+# Set Docker GID
+if [ -n "${DOCKER_GID}" ]; then
+  IFS=':' read -ra group <<< "$(getent group ${DOCKER_GID})"
+  if [ -n "$group" ]; then
+    addgroup jenkins $group
+  else
+    addgroup -g "${DOCKER_GID}" "${DOCKER_GID}"
+    addgroup jenkins "${DOCKER_GID}"
+  fi
+fi
+
 # Set default AWS region
 export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-west-2}
 
@@ -14,5 +25,6 @@ do
   export $key="$(echo $decrypt | jq .Plaintext -r | base64 -d)"
 done
 
-# Handoff to appliction
-exec "$@"
+# Handoff to application as Jenkins user
+export HOME=${JENKINS_HOME}
+exec su -m -c "$(echo $@)" jenkins
