@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e
 
-# Reset ownership on Jenkins home
-chown -R jenkins:jenkins ${JENKINS_HOME}
-
 # Set default AWS region
 export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-west-2}
 
@@ -17,5 +14,5 @@ do
   export $key="$(echo $decrypt | jq .Plaintext -r | base64 -d)"
 done
 
-# Handoff to default entrypoint
-exec su -m jenkins -c "/bin/tini -- /usr/local/bin/jenkins.sh $@"
+# Handoff to appliction
+exec "$@"

@@ -27,10 +27,10 @@ USER jenkins
 # Add Jenkins plugins
 RUN /usr/local/bin/install-plugins.sh github dockerhub-notification workflow-aggregator zentimestamp swarm blueocean
 
-# Add Jenkins home files
-USER root
-COPY src/jenkins/ ${JENKINS_HOME}/
+# Add Jenkins init files
+COPY src/jenkins/ /usr/share/jenkins/ref/
 
 # Entrypoint
 COPY src/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/bin/tini","--","/usr/local/bin/jenkins.sh"]
