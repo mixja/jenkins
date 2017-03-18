@@ -48,6 +48,7 @@ publish:
 	${INFO} "Publish complete"
 
 slave:
+	${INFO} "Checking Jenkins is healthy..."
 	@ $(if $(AWS_ROLE),$(call assume_role,$(AWS_ROLE)),)
 	@ $(call check_service_health,$(RELEASE_ARGS),jenkins)
 	${INFO} "Starting $(SLAVE_COUNT) slave(s)..."
