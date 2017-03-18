@@ -29,5 +29,7 @@ RUN curl --create-dirs -fsSLo /var/jenkins/slave.jar https://repo.jenkins-ci.org
 WORKDIR /var/jenkins
 
 # Entrypoint
-COPY src/entrypoint_slave.sh /usr/local/bin/entrypoint.sh
+COPY src/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY src/slave.sh /usr/local/bin/slave.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["sh","/usr/local/bin/slave.sh"]

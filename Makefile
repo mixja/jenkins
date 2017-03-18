@@ -16,7 +16,6 @@ export AWS_SESSION_TOKEN
 # Jenkins settings
 export DOCKER_GID ?= 100
 export JENKINS_USERNAME ?= admin
-export JENKINS_PASSWORD ?= password
 export KMS_JENKINS_PASSWORD ?= AQECAHi+H8CCveyMphd5OgXcx8kjaBcYpSr5/ZICg4CeeZvrNQAAAGowaAYJKoZIhvcNAQcGoFswWQIBADBUBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDBlT3ScMTMe0VttQ2QIBEIAn0X7uxUvR/IJmx1ZKIhiMgqxV4O5GWf8PuJopyV9WW86MbTmCQ71/
 export JENKINS_SLAVE_VERSION ?= 2.2
 export JENKINS_SLAVE_LABELS ?= DOCKER
@@ -37,7 +36,7 @@ secret:
 
 jenkins: init
 	@ $(if $(AWS_ROLE),$(call assume_role,$(AWS_ROLE)),)
-	${INFO} "Starting services..."
+	${INFO} "Starting Jenkins..."
 	@ docker-compose up -d jenkins
 	@ $(call check_service_health,$(RELEASE_ARGS),jenkins)
 	${INFO} "Jenkins is running at http://$(DOCKER_HOST_IP):$(call get_port_mapping,jenkins,8080)..."
@@ -48,9 +47,10 @@ publish:
 	@ docker push $(DOCKER_REGISTRY)/$(ORG_NAME)/$(REPO_NAME)
 	${INFO} "Publish complete"
 
-slave: jenkins
+slave:
 	@ $(if $(AWS_ROLE),$(call assume_role,$(AWS_ROLE)),)
-	${INFO} "Running $(SLAVE_COUNT) slave(s)..."
+	@ $(call check_service_health,$(RELEASE_ARGS),jenkins)
+	${INFO} "Starting $(SLAVE_COUNT) slave(s)..."
 	@ docker-compose scale jenkins-slave=$(SLAVE_COUNT)
 	${INFO} "$(SLAVE_COUNT) slave(s) running"
 
