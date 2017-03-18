@@ -117,20 +117,10 @@ export DOCKER_GID ?= 100
 ...
 ```
 
-You can either update the Makefile with the correct group ID value for your environment, or override the `Makefile` default by setting an environment variable:
+You can either update the Makefile with the correct group ID value for your environment, or override the `Makefile` default:
 
 ```
-$ export DOCKER_GID=999
-$ make jenkins
+$ make jenkins DOCKER_GID=497
 ```
 
-Note that the `DOCKER_GID` value must be baked into the Jenkins image, so if you need to change this value, you will need to rebuild your Jenkins and slave images by running `make build`:
-
-```
-$ make build
-=> Building image...
-...
-...
-Successfully built faa90e6cd51d
-=> Build complete
-```
+The [`entrypoint.sh`](src/entrypoint.sh) script adds the `jenkins` user to the specify Docker Group ID, ensuring Jenkins can access the underlying Docker engine.
