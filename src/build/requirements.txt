@@ -3,3 +3,5 @@ boto
 boto3
 docker-compose
 awscli
+netaddr
+ndg-httpsclient

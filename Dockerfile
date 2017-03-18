@@ -23,7 +23,7 @@ RUN echo "@community http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/a
 USER jenkins
 
 # Add Jenkins plugins
-RUN /usr/local/bin/install-plugins.sh github dockerhub-notification workflow-aggregator zentimestamp swarm blueocean
+RUN /usr/local/bin/install-plugins.sh github dockerhub-notification workflow-aggregator zentimestamp swarm blueocean ansible ansicolor
 
 # Add Jenkins init files
 COPY src/jenkins/ /usr/share/jenkins/ref/
