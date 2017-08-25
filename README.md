@@ -2,16 +2,6 @@
 
 This project provides a Docker Jenkins image designed to run Docker Workflows.
 
-## Quick Start
-
-The Dockerfile is designed for minimum size and as such only installs Python packages as pre-built Python wheels.
-
-To define Python packages that should be installed, edit the file `packages/requirements.txt`.
-
-To build the Python packages run `make wheel`.  
-
-This will use the [dpaws/wheel](http://github.com/dpaws/wheel) image to first compile all packages and their dependencies and output wheels to the `packages` folder.
-
 ## Running Jenkins
 
 The fastest way to get started is to run `make jenkins`, which will automatically build and start Jenkins.
