@@ -1,4 +1,4 @@
-FROM jenkins:2.32.3-alpine
+FROM jenkins/jenkins:alpine
 MAINTAINER Justin Menga <justin.menga@gmail.com>
 LABEL application=jenkins
 

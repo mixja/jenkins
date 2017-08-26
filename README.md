@@ -23,6 +23,14 @@ Creating jenkins_jenkins_1
 
 If you need to make any changes to the Jenkins images, ensure you run `make build` to rebuild the images.
 
+## Disabling AWS Secrets
+
+By default this workflow assumes you are using KMS encrypted credentials for your admin user.
+
+To run locally without AWS secrets you can run the `make jenkins-local` command.
+
+The default credentials generated are `admin:password`.
+
 ## Running Jenkins Slaves
 
 Once Jenkins is running, you can run one or more Jenkins slaves.

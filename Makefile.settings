@@ -11,7 +11,7 @@ endif
 
 # Docker host settings
 DOCKER_HOST_IP := $(shell echo $$DOCKER_HOST | awk -F/ '{printf $$3}' | awk -F: '{printf $$1}')
-DOCKER_HOST_IP := $(if $(DOCKER_HOST_IP),$(DOCKER_HOST_IP),\<docker-host\>)
+DOCKER_HOST_IP := $(if $(DOCKER_HOST_IP),$(DOCKER_HOST_IP),localhost)
 
 # Image and Repository Tag introspection functions
 # Syntax: $(call get_image_id,<docker-compose-environment>,<service-name>)

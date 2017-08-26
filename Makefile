@@ -41,6 +41,9 @@ jenkins: init
 	@ $(call check_service_health,$(RELEASE_ARGS),jenkins)
 	${INFO} "Jenkins is running at http://$(DOCKER_HOST_IP):$(call get_port_mapping,jenkins,8080)..."
 
+jenkins-local: AWS_ROLE =
+jenkins-local: KMS_JENKINS_PASSWORD =
+jenkins-local: jenkins
 publish:
 	${INFO} "Publishing image..."
 	@ docker tag $$(docker inspect -f '{{ .Image }}' $$(docker-compose ps -q jenkins)) $(DOCKER_REGISTRY)/$(ORG_NAME)/$(REPO_NAME)
