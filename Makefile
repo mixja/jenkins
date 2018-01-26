@@ -6,20 +6,22 @@ DOCKER_REGISTRY ?= docker.io
 ORG_NAME ?= dpaws
 REPO_NAME ?= jenkins
 
-# AWS settings
-AWS_ROLE ?= 
-KMS_KEY_ID ?= 
-export AWS_ACCESS_KEY_ID
-export AWS_SECRET_ACCESS_KEY
-export AWS_SESSION_TOKEN
-
 # Jenkins settings
 export DOCKER_GID ?= 100
 export JENKINS_USERNAME ?= admin
 export JENKINS_PASSWORD ?= password
-export KMS_JENKINS_PASSWORD
 export JENKINS_SLAVE_VERSION ?= 2.2
 export JENKINS_SLAVE_LABELS ?= DOCKER
+
+# AWS settings
+# The role to assume to inject temporary credentials into your Jenkins container
+AWS_ROLE ?= `aws configure get role_arn`
+# KMS encrypted password - the temporary credentials must possess kms:decrypt permissions for the key used to encrypt the credentials
+export KMS_JENKINS_PASSWORD ?=
+# AWS credentials - these are automatically configured when AWS_PROFILE is set in your environment
+export AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY
+export AWS_SESSION_TOKEN
 
 init:
 	${INFO} "Creating volumes..."
@@ -30,22 +32,14 @@ build:
 	@ docker-compose build --pull
 	${INFO} "Build complete"
 
-secret:
-	$(if $(ARGS),,$(error ERROR: You must specify a plaintext string to encrypt - e.g. make secret "Hello"))
-	${INFO} "Encrypted ciphertext:"
-	@ aws kms encrypt --key-id ${KMS_KEY_ID} --plaintext '$(ARGS)' | jq '.CiphertextBlob' -r
-
 jenkins: init
-	@ $(if $(AWS_ROLE),$(call assume_role,$(AWS_ROLE)),)
+	@ $(if $(and $(AWS_PROFILE),$(KMS_JENKINS_PASSWORD)),$(call assume_role,$(AWS_ROLE)),)
 	${INFO} "Starting Jenkins..."
 	${INFO} "This may take some time..."
 	@ docker-compose up -d jenkins
 	@ $(call check_service_health,$(RELEASE_ARGS),jenkins)
 	${INFO} "Jenkins is running at http://$(DOCKER_HOST_IP):$(call get_port_mapping,jenkins,8080)..."
 
-jenkins-local: AWS_ROLE =
-jenkins-local: KMS_JENKINS_PASSWORD =
-jenkins-local: jenkins
 publish:
 	${INFO} "Publishing image..."
 	@ docker tag $$(docker inspect -f '{{ .Image }}' $$(docker-compose ps -q jenkins)) $(DOCKER_REGISTRY)/$(ORG_NAME)/$(REPO_NAME)
@@ -54,7 +48,7 @@ publish:
 
 slave:
 	${INFO} "Checking Jenkins is healthy..."
-	@ $(if $(AWS_ROLE),$(call assume_role,$(AWS_ROLE)),)
+	@ $(if $(and $(AWS_PROFILE),$(KMS_JENKINS_PASSWORD)),$(call assume_role,$(AWS_ROLE)),)
 	@ $(call check_service_health,$(RELEASE_ARGS),jenkins)
 	${INFO} "Starting $(SLAVE_COUNT) slave(s)..."
 	@ docker-compose up -d --scale jenkins-slave=$(SLAVE_COUNT)

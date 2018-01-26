@@ -4,7 +4,7 @@ This project provides a Docker Jenkins image designed to run Docker Workflows.
 
 ## Running Jenkins
 
-The fastest way to get started is to run `make jenkins`, which will automatically build and start Jenkins.
+The fastest way to get started is to run `make jenkins`, which will automatically build and start Jenkins.  
 
 An external Docker volume called `jenkins_home` will be automatically created.
 
@@ -21,15 +21,18 @@ Creating jenkins_jenkins_1
 
 > `make jenkins` creates a dynamic port mapping on the Docker Host so if you kill and remove the jenkins container, it will likely start on a new dynamic port mapping as displayed on the `make jenkins` output
 
+By default Jenkins will be configured with default credentials of `admin:password`.
+
 If you need to make any changes to the Jenkins images, ensure you run `make build` to rebuild the images.
 
-## Disabling AWS Secrets
+## AWS Secrets
 
-By default this workflow assumes you are using KMS encrypted credentials for your admin user.
+This workflow allows you to define KMS encrypted credentials for your admin user which are injected securely at container startup.  
 
-To run locally without AWS secrets you can run the `make jenkins-local` command.
+This requires your local environment to be setup correctly as follows:
 
-The default credentials generated are `admin:password`.
+- The `AWS_PROFILE` environment variable is configured with an appropraite AWS profile in your local environment
+- A KMS encrypted password is defined for the `KMS_JENKINS_PASSWORD` setting
 
 ## Running Jenkins Slaves
 
