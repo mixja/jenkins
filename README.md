@@ -81,7 +81,7 @@ Creating and starting cajenkins_jenkins-slave_5 ... done
 
 You can use `make clean` to stop and remove the Jenkins container.  This operation will NOT destroy your Jenkins configuration, which is persisted in the external `jenkins_home` volume.  
 
-If you want to remove your Jenkins configuration, use the `docker volume rm jenkins_home` command to remove this volume:
+If you want to remove your Jenkins configuration, use the `make destroy` command to remove this volume:
 
 ```
 $ make clean
@@ -93,7 +93,10 @@ Removing jenkins_jenkins_1 ... done
 Removing network jenkins_default
 Volume jenkins_home is external, skipping
 => Services stopped
-$ docker volume rm jenkins_home
+$ make destroy
+=> Deleting jenkins home volume...
+jenkins_home
+=> Deletion complete
 ```
 
 ## Docker Group ID

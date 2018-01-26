@@ -7,8 +7,8 @@ ORG_NAME ?= dpaws
 REPO_NAME ?= jenkins
 
 # AWS settings
-AWS_ROLE ?= arn:aws:iam::543279062384:role/admin
-KMS_KEY_ID ?= f54a6e4e-f3c0-4f07-a83a-d1d94959c66a
+AWS_ROLE ?= 
+KMS_KEY_ID ?= 
 export AWS_ACCESS_KEY_ID
 export AWS_SECRET_ACCESS_KEY
 export AWS_SESSION_TOKEN
@@ -16,7 +16,8 @@ export AWS_SESSION_TOKEN
 # Jenkins settings
 export DOCKER_GID ?= 100
 export JENKINS_USERNAME ?= admin
-export KMS_JENKINS_PASSWORD ?= AQECAHi+H8CCveyMphd5OgXcx8kjaBcYpSr5/ZICg4CeeZvrNQAAAGowaAYJKoZIhvcNAQcGoFswWQIBADBUBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDBlT3ScMTMe0VttQ2QIBEIAn0X7uxUvR/IJmx1ZKIhiMgqxV4O5GWf8PuJopyV9WW86MbTmCQ71/
+export JENKINS_PASSWORD ?= password
+export KMS_JENKINS_PASSWORD
 export JENKINS_SLAVE_VERSION ?= 2.2
 export JENKINS_SLAVE_LABELS ?= DOCKER
 
@@ -37,6 +38,7 @@ secret:
 jenkins: init
 	@ $(if $(AWS_ROLE),$(call assume_role,$(AWS_ROLE)),)
 	${INFO} "Starting Jenkins..."
+	${INFO} "This may take some time..."
 	@ docker-compose up -d jenkins
 	@ $(call check_service_health,$(RELEASE_ARGS),jenkins)
 	${INFO} "Jenkins is running at http://$(DOCKER_HOST_IP):$(call get_port_mapping,jenkins,8080)..."
@@ -55,13 +57,18 @@ slave:
 	@ $(if $(AWS_ROLE),$(call assume_role,$(AWS_ROLE)),)
 	@ $(call check_service_health,$(RELEASE_ARGS),jenkins)
 	${INFO} "Starting $(SLAVE_COUNT) slave(s)..."
-	@ docker-compose scale jenkins-slave=$(SLAVE_COUNT)
+	@ docker-compose up -d --scale jenkins-slave=$(SLAVE_COUNT)
 	${INFO} "$(SLAVE_COUNT) slave(s) running"
 
 clean:
 	${INFO} "Stopping services..."
 	@ docker-compose down -v || true
 	${INFO} "Services stopped"
+
+destroy: clean
+	${INFO} "Deleting jenkins home volume..."
+	@ docker volume rm -f jenkins_home
+	${INFO} "Deletion complete"
 
 log:
 	${INFO} "Streaming Jenkins logs - press CTRL+C to exit..."

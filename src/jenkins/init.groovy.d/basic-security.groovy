@@ -1,6 +1,7 @@
 #!groovy
 import jenkins.model.*
 import hudson.security.*
+import hudson.security.csrf.DefaultCrumbIssuer
 
 def instance = Jenkins.getInstance()
 
@@ -12,4 +13,5 @@ instance.setSecurityRealm(hudsonRealm)
 
 def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
 instance.setAuthorizationStrategy(strategy)
+instance.setCrumbIssuer(new DefaultCrumbIssuer(true))
 instance.save()

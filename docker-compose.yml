@@ -9,12 +9,13 @@ services:
     build:
       context: .
     environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
-      DOCKER_GID: ${DOCKER_GID}
-      JENKINS_USERNAME: ${JENKINS_USERNAME}
-      KMS_JENKINS_PASSWORD: ${KMS_JENKINS_PASSWORD}
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_SESSION_TOKEN
+      - DOCKER_GID
+      - JENKINS_USERNAME
+      - JENKINS_PASSWORD
+      - KMS_JENKINS_PASSWORD
     healthcheck:
       test: ["CMD", "curl", "-fs", "http://localhost:8080/login"]
       interval: 5s
@@ -31,13 +32,11 @@ services:
       args:
         JENKINS_SLAVE_VERSION: ${JENKINS_SLAVE_VERSION}
     environment:
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN}
-      DOCKER_GID: ${DOCKER_GID}
-      JENKINS_URL: http://jenkins:8080/
-      JENKINS_USERNAME: ${JENKINS_USERNAME}
-      JENKINS_SLAVE_LABELS: ${JENKINS_SLAVE_LABELS}
-      KMS_JENKINS_PASSWORD: ${KMS_JENKINS_PASSWORD}
+      - DOCKER_GID
+      - JENKINS_URL=http://jenkins:8080/
+      - JENKINS_USERNAME
+      - JENKINS_SLAVE_LABELS
+      - JENKINS_PASSWORD
+      - KMS_JENKINS_PASSWORD
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
