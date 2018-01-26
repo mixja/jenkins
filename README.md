@@ -1,4 +1,4 @@
-# Docker in Production using AWS - Jenkins
+# Jenkins Docker Image
 
 This project provides a Docker Jenkins image designed to run Docker Workflows.
 
