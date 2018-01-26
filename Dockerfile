@@ -32,7 +32,7 @@ COPY src/jenkins/ /usr/share/jenkins/ref/
 ENV DOCKER_GID=100
 COPY src/entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["/bin/tini","--","/usr/local/bin/jenkins.sh"]
+CMD ["/sbin/tini","--","/usr/local/bin/jenkins.sh"]
 
 # Change to root so that we can set Docker GID on container startup
 USER root
