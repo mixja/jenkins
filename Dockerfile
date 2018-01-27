@@ -12,7 +12,7 @@ COPY src/build/ /build/
 # Install system requirements
 RUN echo "@community http://nl.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
   	apk add --no-cache --virtual build-dependencies python-dev openssl-dev libffi-dev musl-dev git gcc tzdata && \
-    apk add --no-cache --update py-pip make docker@community jq && \
+    apk add --no-cache --update py-pip make docker@community jq su-exec && \
     cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
     echo "${TIMEZONE}" >  /etc/timezone && \
     pip install --no-cache-dir -r /build/requirements.txt && \

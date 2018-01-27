@@ -29,4 +29,4 @@ done
 
 # Handoff to application as Jenkins user
 export HOME=${JENKINS_HOME}
-exec su -m -c "$(echo $@)" jenkins
+exec su-exec jenkins "$@"
