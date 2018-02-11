@@ -1,4 +1,4 @@
-version: '2.1'
+version: '2.3'
 
 volumes:
   jenkins_home:
@@ -8,6 +8,7 @@ services:
   jenkins:
     build:
       context: .
+    image: dpaws/jenkins
     environment:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
@@ -31,6 +32,7 @@ services:
       dockerfile: Dockerfile.slave
       args:
         JENKINS_SLAVE_VERSION: ${JENKINS_SLAVE_VERSION}
+    image: dpaws/jenkins-slave
     environment:
       - DOCKER_GID
       - JENKINS_URL=http://jenkins:8080/

@@ -2,10 +2,6 @@ include Makefile.settings
 
 .PHONY: init build clean publish log jenkins slave
 
-DOCKER_REGISTRY ?= docker.io
-ORG_NAME ?= dpaws
-REPO_NAME ?= jenkins
-
 # Jenkins settings
 export DOCKER_GID ?= 100
 export JENKINS_USERNAME ?= admin
@@ -18,10 +14,6 @@ export JENKINS_SLAVE_LABELS ?= DOCKER
 AWS_ROLE ?= `aws configure get role_arn`
 # KMS encrypted password - the temporary credentials must possess kms:decrypt permissions for the key used to encrypt the credentials
 export KMS_JENKINS_PASSWORD ?=
-# AWS credentials - these are automatically configured when AWS_PROFILE is set in your environment
-export AWS_ACCESS_KEY_ID
-export AWS_SECRET_ACCESS_KEY
-export AWS_SESSION_TOKEN
 
 init:
 	${INFO} "Creating volumes..."
@@ -41,9 +33,8 @@ jenkins: init
 	${INFO} "Jenkins is running at http://$(DOCKER_HOST_IP):$(call get_port_mapping,jenkins,8080)..."
 
 publish:
-	${INFO} "Publishing image..."
-	@ docker tag $$(docker inspect -f '{{ .Image }}' $$(docker-compose ps -q jenkins)) $(DOCKER_REGISTRY)/$(ORG_NAME)/$(REPO_NAME)
-	@ docker push $(DOCKER_REGISTRY)/$(ORG_NAME)/$(REPO_NAME)
+	${INFO} "Publishing images..."
+	@ docker-compose push
 	${INFO} "Publish complete"
 
 slave:
