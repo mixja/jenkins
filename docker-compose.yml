@@ -8,6 +8,7 @@ services:
   jenkins:
     build:
       context: .
+      target: jenkins
     image: dpaws/jenkins
     environment:
       - AWS_ACCESS_KEY_ID
@@ -29,7 +30,7 @@ services:
   jenkins-slave:
     build:
       context: .
-      dockerfile: Dockerfile.slave
+      target: slave
       args:
         JENKINS_SLAVE_VERSION: ${JENKINS_SLAVE_VERSION}
     image: dpaws/jenkins-slave

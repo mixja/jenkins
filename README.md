@@ -49,7 +49,7 @@ include Makefile.settings
 DOCKER_REGISTRY ?= docker.io
 ORG_NAME ?= dpaws
 REPO_NAME ?= jenkins
-export DOCKER_GID ?= 100
+export DOCKER_GID ?= 0
 export JENKINS_USERNAME ?= admin
 export JENKINS_PASSWORD ?= password
 ...
@@ -106,7 +106,7 @@ jenkins_home
 
 Because the Jenkins container runs as a non-root user, to get access to the underlying Docker Engine socket to run Docker workflows, you must set the correct group ID of the `docker` group (or group that has permissions to read/write to the Docker Engine socket) on the underlying Docker Engine. 
 
-The Makefile defines this via the `DOCKER_GID` variable, which defaults to `100` (the group ID currently used in Docker Machine boot2docker engines):
+The Makefile defines this via the `DOCKER_GID` variable, which defaults to `0` (root group ID as Docker for Desktop VM does not include a `docker` group):
 
 ```
 $ cat Makefile
@@ -117,7 +117,7 @@ include Makefile.settings
 DOCKER_REGISTRY ?= docker.io
 ORG_NAME ?= dpaws
 REPO_NAME ?= jenkins
-export DOCKER_GID ?= 100
+export DOCKER_GID ?= 0
 ...
 ```
 
@@ -132,4 +132,4 @@ $ make slave DOCKER_GID=497
 ...
 ```
 
-The [`entrypoint.sh`](src/entrypoint.sh) script adds the `jenkins` user to the specify Docker Group ID, ensuring Jenkins can access the underlying Docker engine.
+The [`docker-compose.yml`](src/entrypoint.sh) script adds the `jenkins` user to the specify Docker Group ID, ensuring Jenkins can access the underlying Docker engine.

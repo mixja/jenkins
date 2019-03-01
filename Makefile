@@ -3,10 +3,10 @@ include Makefile.settings
 .PHONY: init build clean publish log jenkins slave
 
 # Jenkins settings
-export DOCKER_GID ?= 100
+export DOCKER_GID ?= 0
 export JENKINS_USERNAME ?= admin
 export JENKINS_PASSWORD ?= password
-export JENKINS_SLAVE_VERSION ?= 2.2
+export JENKINS_SLAVE_VERSION ?= 3.9
 export JENKINS_SLAVE_LABELS ?= DOCKER
 
 # AWS settings
