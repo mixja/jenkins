@@ -132,4 +132,4 @@ $ make slave DOCKER_GID=497
 ...
 ```
 
-The [`docker-compose.yml`](src/entrypoint.sh) script adds the `jenkins` user to the specify Docker Group ID, ensuring Jenkins can access the underlying Docker engine.
+The [`entrypoint.sh`](src/entrypoint.sh) script adds the `jenkins` user to the specified Docker Group ID, ensuring Jenkins can access the underlying Docker engine.
