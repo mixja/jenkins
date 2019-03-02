@@ -22,6 +22,11 @@ RUN apk add --no-cache --virtual build-dependencies python-dev openssl-dev libff
 # Set default DOCKER_GID
 ENV DOCKER_GID=0
 
+# Entrypoint
+COPY src/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
 ### Jenkins Server Image
 FROM base as jenkins
 
@@ -34,9 +39,7 @@ RUN /usr/local/bin/install-plugins.sh github dockerhub-notification workflow-agg
 # Add Jenkins init files
 COPY src/jenkins/ /usr/share/jenkins/ref/
 
-# Entrypoint
-COPY src/entrypoint.sh /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# Default command
 CMD ["/sbin/tini","--","/usr/local/bin/jenkins.sh"]
 
 # Change to root so that we can set Docker GID on container startup
@@ -51,10 +54,8 @@ RUN curl --create-dirs -fsSLo /usr/share/jenkins/slave.jar https://repo.jenkins-
 WORKDIR /usr/share/jenkins
 USER jenkins
 
-# Entrypoint
-COPY src/entrypoint.sh /usr/local/bin/entrypoint.sh
+# Default command
 COPY src/slave.sh /usr/local/bin/slave.sh
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["sh","/usr/local/bin/slave.sh"]
 
 # Change to root so that we can set Docker GID on container startup
